@@ -3,6 +3,7 @@ import Head from 'next/head';
 import { MantineProvider } from '@mantine/core';
 import { NotificationsProvider } from '@mantine/notifications';
 import { SocketManagerProvider } from '@components/websocket/SocketManagerProvider';
+import { RecoilRoot } from 'recoil';
 
 export default function App(props: AppProps) {
   const { Component, pageProps } = props;
@@ -17,20 +18,22 @@ export default function App(props: AppProps) {
         />
       </Head>
 
-      <MantineProvider
-        withGlobalStyles
-        withNormalizeCSS
-        theme={{
-          /** Put your mantine theme override here */
-          colorScheme: 'dark',
-        }}
-      >
-        <NotificationsProvider position="bottom-center" limit={15}>
-          <SocketManagerProvider>
-            <Component {...pageProps} />
-          </SocketManagerProvider>
-        </NotificationsProvider>
-      </MantineProvider>
+      <RecoilRoot>
+        <MantineProvider
+          withGlobalStyles
+          withNormalizeCSS
+          theme={{
+            /** Put your mantine theme override here */
+            colorScheme: 'dark',
+          }}
+        >
+          <NotificationsProvider position="bottom-center" limit={15}>
+            <SocketManagerProvider>
+              <Component {...pageProps} />
+            </SocketManagerProvider>
+          </NotificationsProvider>
+        </MantineProvider>
+      </RecoilRoot>
     </>
   );
 }
