@@ -2,6 +2,7 @@ import { v4 } from 'uuid';
 import { Server, Socket } from 'socket.io';
 import { AuthenticatedSocket } from '@app/game/types';
 import { ServerEvents } from '@shared/server/ServerEvents';
+import { Instance } from '@app/game/instance/instance';
 
 class Lobby {
   public readonly id: string = v4();
@@ -10,6 +11,7 @@ class Lobby {
     Socket['id'],
     AuthenticatedSocket
   >();
+  public instance: Instance = new Instance(this);
 
   constructor(
     private readonly server: Server,
