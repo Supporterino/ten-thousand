@@ -1,0 +1,20 @@
+{
+  "name": "the-ten-thousand",
+  "version": "0.0.1",
+  "description": "The dice game \"ten thousand\" as web application with a next.js frontend and nest.js as the game server implementation",
+  "repository": "ssh://git@git.roth-kl.de:9022/supporterino/the-ten-thousand.git",
+  "author": "Supporterino <lars@roth-kl.de>",
+  "license": "MIT",
+  "private": true,
+  "workspaces": {
+    "packages": [
+      "packages/*"
+    ]
+  },
+  "scripts": {
+    "start:dev:client": "yarn workspace @the-ten-thousand/client start:dev",
+    "start:dev:server": "yarn workspace @the-ten-thousand/server start:dev",
+    "start:prod:client": "yarn workspace @the-ten-thousand/client start:prod",
+    "start:prod:server": "yarn workspace @the-ten-thousand/server start:prod"
+  }
+}

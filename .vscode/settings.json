@@ -1,0 +1,8 @@
+{
+    "conventionalCommits.scopes": [
+        "shared",
+        "server",
+        "client",
+        "core"
+    ]
+}
