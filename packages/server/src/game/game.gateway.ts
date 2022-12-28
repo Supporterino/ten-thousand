@@ -14,6 +14,9 @@ import { WsValidationPipe } from '@app/websockets/ws.validation-pipe';
 import { LobbyManager } from '@app/game/lobby/lobby.manager';
 import { AuthenticatedSocket } from '@app/game/types';
 import { Server, Socket } from 'socket.io';
+import { LobbyJoinDto } from './dtos/LobbyJoinDto';
+import { LobbyCreateDto } from './dtos/LobbyCreateDto';
+import { LobbyLeaveDto } from './dtos/LobbyLeaveDto';
 
 @UsePipes(new WsValidationPipe())
 @WebSocketGateway()
@@ -48,5 +51,25 @@ export class GameGateway
         message: 'pong',
       },
     };
+  }
+
+  @SubscribeMessage(ClientEvents.LobbyCreate)
+  onLobbyCreate(client: AuthenticatedSocket, data: LobbyCreateDto) {
+    const lobby = this.lobbyManager.createLobby(
+      data.mode,
+      data.numberOfPlayers,
+    );
+
+    lobby.addClient(client);
+  }
+
+  @SubscribeMessage(ClientEvents.LobbyJoin)
+  onLobbyJoin(client: AuthenticatedSocket, data: LobbyJoinDto) {
+    this.lobbyManager.joinLobby(data.lobbyId, client);
+  }
+
+  @SubscribeMessage(ClientEvents.LobbyLeave)
+  onLobbyLeave(client: AuthenticatedSocket) {
+    client.data.lobby?.removeClient(client);
   }
 }
