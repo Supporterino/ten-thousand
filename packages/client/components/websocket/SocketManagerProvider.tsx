@@ -21,4 +21,4 @@ export const SocketManagerProvider: React.FunctionComponent<ProviderProps> = ({
       {children}
     </SocketManagerContext.Provider>
   );
-}
+};
