@@ -66,4 +66,4 @@ class LobbyManager {
   }
 }
 
-export default LobbyManager;
+export { LobbyManager };

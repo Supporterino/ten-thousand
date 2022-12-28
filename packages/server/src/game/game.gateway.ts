@@ -11,7 +11,7 @@ import { ClientEvents } from '@shared/client/ClientEvents';
 import { ServerEvents } from '@shared/server/ServerEvents';
 import { ServerPayloads } from '@shared/server/ServerPayloads';
 import { WsValidationPipe } from '@app/websockets/ws.validation-pipe';
-import LobbyManager from '@app/game/lobby/lobby.manager';
+import { LobbyManager } from '@app/game/lobby/lobby.manager';
 import { AuthenticatedSocket } from '@app/game/types';
 import { Server, Socket } from 'socket.io';
 
