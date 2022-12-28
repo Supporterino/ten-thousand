@@ -14,6 +14,14 @@ class LobbyManager {
     Lobby
   >();
 
+  public initializeSocket(client: AuthenticatedSocket): void {
+    client.data.lobby = null;
+  }
+
+  public terminateSocket(client: AuthenticatedSocket): void {
+    client.data.lobby?.removeClient(client);
+  }
+
   public createLobby(mode: LobbyMode, numberOfClients: number) {
     const clients: number = mode === 'solo' ? 1 : numberOfClients;
 
@@ -57,3 +65,5 @@ class LobbyManager {
     }
   }
 }
+
+export default LobbyManager;

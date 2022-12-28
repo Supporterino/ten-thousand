@@ -1,6 +1,8 @@
-import { UsePipes } from '@nestjs/common';
+import { Logger, UsePipes } from '@nestjs/common';
 import {
   OnGatewayConnection,
+  OnGatewayDisconnect,
+  OnGatewayInit,
   SubscribeMessage,
   WebSocketGateway,
   WsResponse,
@@ -9,13 +11,31 @@ import { ClientEvents } from '@shared/client/ClientEvents';
 import { ServerEvents } from '@shared/server/ServerEvents';
 import { ServerPayloads } from '@shared/server/ServerPayloads';
 import { WsValidationPipe } from '../websockets/ws.validation-pipe';
+import LobbyManager from './lobby/lobby.manager';
 import { AuthenticatedSocket } from './types';
+import { Server, Socket } from 'socket.io';
 
 @UsePipes(new WsValidationPipe())
 @WebSocketGateway()
-export class GameGateway implements OnGatewayConnection {
-  handleConnection(client: any, ...args: any[]) {
-    throw new Error('Method not implemented.');
+export class GameGateway
+  implements OnGatewayDisconnect, OnGatewayConnection, OnGatewayInit
+{
+  private readonly logger: Logger = new Logger(GameGateway.name);
+
+  constructor(private readonly lobbyManager: LobbyManager) {}
+
+  afterInit(server: Server) {
+    this.lobbyManager.server = server;
+
+    this.logger.log('Game server and gateway initialized.');
+  }
+
+  handleConnection(client: Socket, ...args: any[]) {
+    this.lobbyManager.initializeSocket(client as AuthenticatedSocket);
+  }
+
+  handleDisconnect(client: Socket) {
+    this.lobbyManager.terminateSocket(client as AuthenticatedSocket);
   }
 
   @SubscribeMessage(ClientEvents.Ping)
