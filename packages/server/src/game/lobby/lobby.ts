@@ -1,7 +1,7 @@
 import { v4 } from 'uuid';
 import { Server, Socket } from 'socket.io';
-import { AuthenticatedSocket } from '../types';
-import { ServerEvents } from '@app/../shared/server/ServerEvents';
+import { AuthenticatedSocket } from '@app/game/types';
+import { ServerEvents } from '@shared/server/ServerEvents';
 
 class Lobby {
   public readonly id: string = v4();

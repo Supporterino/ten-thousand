@@ -1,11 +1,11 @@
 import { Cron } from '@nestjs/schedule';
 import { SocketExceptions } from '@shared/server/SocketExceptions';
 import { Server } from 'socket.io';
-import { LOBBY_LIFETIME } from '../constants';
-import { ServerException } from '../server.exception';
-import { AuthenticatedSocket } from '../types';
-import Lobby from './lobby';
-import { LobbyMode } from './types';
+import { LOBBY_LIFETIME } from '@app/game/constants';
+import { ServerException } from '@app/game/server.exception';
+import { AuthenticatedSocket } from '@app/game/types';
+import Lobby from '@app/game/lobby/lobby';
+import { LobbyMode } from '@app/game/lobby/types';
 
 class LobbyManager {
   public server: Server;
