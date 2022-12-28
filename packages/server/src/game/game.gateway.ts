@@ -16,7 +16,6 @@ import { AuthenticatedSocket } from '@app/game/types';
 import { Server, Socket } from 'socket.io';
 import { LobbyJoinDto } from './dtos/LobbyJoinDto';
 import { LobbyCreateDto } from './dtos/LobbyCreateDto';
-import { LobbyLeaveDto } from './dtos/LobbyLeaveDto';
 
 @UsePipes(new WsValidationPipe())
 @WebSocketGateway()
