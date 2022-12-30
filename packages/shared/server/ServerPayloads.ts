@@ -12,6 +12,8 @@ type ServerPayloads = {
 
   [ServerEvents.LobbyState]: {
     lobbyId: string;
+    mode: 'solo' | 'multi';
+    numberOfPlayers: number;
   };
 };
 
