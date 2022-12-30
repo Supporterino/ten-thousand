@@ -3,6 +3,7 @@ import { Server, Socket } from 'socket.io';
 import { AuthenticatedSocket } from '@app/game/types';
 import { ServerEvents } from '@shared/server/ServerEvents';
 import { Instance } from '@app/game/instance/instance';
+import { ServerPayloads } from '@app/../../shared/server/ServerPayloads';
 
 class Lobby {
   public readonly id: string = v4();
@@ -28,6 +29,16 @@ class Lobby {
     this.clients.delete(client.id);
     client.leave(this.id);
     client.data.lobby = null;
+  }
+
+  public dispatchLobbyState(): void {
+    const payload: ServerPayloads[ServerEvents.LobbyState] = {
+      lobbyId: this.id,
+      mode: this.numberOfClients === 1 ? 'solo' : 'multi',
+      numberOfPlayers: this.numberOfClients,
+    };
+
+    this.dispatchToLobby(ServerEvents.LobbyState, payload);
   }
 
   public dispatchToLobby<T>(event: ServerEvents, payload: T): void {

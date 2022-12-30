@@ -53,7 +53,10 @@ export class GameGateway
   }
 
   @SubscribeMessage(ClientEvents.LobbyCreate)
-  onLobbyCreate(client: AuthenticatedSocket, data: LobbyCreateDto) {
+  onLobbyCreate(
+    client: AuthenticatedSocket,
+    data: LobbyCreateDto,
+  ): WsResponse<ServerPayloads[ServerEvents.GameNotification]> {
     this.logger.debug('Creating lobby with DTO: ', data);
     const lobby = this.lobbyManager.createLobby(
       data.mode,
@@ -61,6 +64,14 @@ export class GameGateway
     );
 
     lobby.addClient(client);
+
+    return {
+      event: ServerEvents.GameNotification,
+      data: {
+        color: 'green',
+        message: 'Lobby created',
+      },
+    };
   }
 
   @SubscribeMessage(ClientEvents.LobbyJoin)
