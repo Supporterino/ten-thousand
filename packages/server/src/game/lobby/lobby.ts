@@ -23,12 +23,16 @@ class Lobby {
     this.clients.set(client.id, client);
     client.join(this.id);
     client.data.lobby = this;
+
+    this.dispatchLobbyState();
   }
 
   public removeClient(client: AuthenticatedSocket): void {
     this.clients.delete(client.id);
     client.leave(this.id);
     client.data.lobby = null;
+
+    this.dispatchLobbyState();
   }
 
   public dispatchLobbyState(): void {
