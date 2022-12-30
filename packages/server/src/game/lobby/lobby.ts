@@ -51,7 +51,7 @@ class Lobby {
       lobbyId: this.id,
       mode: this.numberOfClients === 1 ? 'solo' : 'multi',
       numberOfPlayers: this.numberOfClients,
-      clientNames: this.clientNames,
+      clientNames: Array.from(this.clientNames),
     };
 
     this.dispatchToLobby(ServerEvents.LobbyState, payload);

@@ -15,7 +15,7 @@ type ServerPayloads = {
     lobbyId: string;
     mode: 'solo' | 'multi';
     numberOfPlayers: number;
-    clientNames: Map<Socket['id'], string>;
+    clientNames: Array<[string, string]>;
   };
 };
 
