@@ -1,8 +1,8 @@
 const Header: React.FunctionComponent = () => {
   return (
     <div>
-      <h1 className="underline">
-        <span>Ten thousand</span>
+      <h1 className="w-full flex items-center">
+        <span className="flex-auto text-center">Ten thousand</span>
       </h1>
     </div>
   );
