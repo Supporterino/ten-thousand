@@ -16,6 +16,7 @@ import { AuthenticatedSocket } from '@app/game/types';
 import { Server, Socket } from 'socket.io';
 import { LobbyJoinDto } from './dtos/LobbyJoinDto';
 import { LobbyCreateDto } from './dtos/LobbyCreateDto';
+import { ChangeNameDto } from './dtos/ChangeNameDto';
 
 @UsePipes(new WsValidationPipe())
 @WebSocketGateway()
@@ -82,5 +83,11 @@ export class GameGateway
   @SubscribeMessage(ClientEvents.LobbyLeave)
   onLobbyLeave(client: AuthenticatedSocket) {
     client.data.lobby?.removeClient(client);
+  }
+
+  @SubscribeMessage(ClientEvents.ChangeUsername)
+  onNameChange(client: AuthenticatedSocket, data: ChangeNameDto) {
+    const lobby = this.lobbyManager.getLobbyByID(data.lobbyId);
+    lobby.changeName(client, data.name);
   }
 }

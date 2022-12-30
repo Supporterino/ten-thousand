@@ -13,6 +13,10 @@ class Lobby {
     AuthenticatedSocket
   >();
   public instance: Instance = new Instance(this);
+  public clientNames: Map<Socket['id'], string> = new Map<
+    Socket['id'],
+    string
+  >();
 
   constructor(
     private readonly server: Server,
@@ -29,8 +33,15 @@ class Lobby {
 
   public removeClient(client: AuthenticatedSocket): void {
     this.clients.delete(client.id);
+    this.clientNames.delete(client.id);
     client.leave(this.id);
     client.data.lobby = null;
+
+    this.dispatchLobbyState();
+  }
+
+  public changeName(client: AuthenticatedSocket, name: string): void {
+    this.clientNames.set(client.id, name);
 
     this.dispatchLobbyState();
   }
@@ -40,6 +51,7 @@ class Lobby {
       lobbyId: this.id,
       mode: this.numberOfClients === 1 ? 'solo' : 'multi',
       numberOfPlayers: this.numberOfClients,
+      clientNames: this.clientNames,
     };
 
     this.dispatchToLobby(ServerEvents.LobbyState, payload);

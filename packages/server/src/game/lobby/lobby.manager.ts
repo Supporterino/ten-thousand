@@ -50,6 +50,18 @@ class LobbyManager {
     lobby.addClient(client);
   }
 
+  public getLobbyByID(lobbyId: string): Lobby {
+    const lobby = this.lobbies.get(lobbyId);
+
+    if (!lobby)
+      throw new ServerException(
+        SocketExceptions.LobbyError,
+        'Lobby not found!',
+      );
+
+    return lobby;
+  }
+
   @Cron('*/5 * * * *')
   private lobbiesCleaning(): void {
     for (const [lobbyId, lobby] of this.lobbies) {
