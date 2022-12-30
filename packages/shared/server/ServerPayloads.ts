@@ -1,4 +1,5 @@
 import { ServerEvents } from './ServerEvents';
+import { Socket } from 'socket.io';
 
 type ServerPayloads = {
   [ServerEvents.Pong]: {
@@ -14,6 +15,7 @@ type ServerPayloads = {
     lobbyId: string;
     mode: 'solo' | 'multi';
     numberOfPlayers: number;
+    clientNames: Map<Socket['id'], string>;
   };
 };
 
