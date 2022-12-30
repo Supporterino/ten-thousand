@@ -6,6 +6,7 @@ import { ServerPayloads } from '@the-ten-thousand/shared/server/ServerPayloads';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import { useRecoilState } from 'recoil';
+import Game from './Game';
 import Introduction from './Introduction';
 import { CurrentLobbyState } from './State';
 
@@ -17,6 +18,23 @@ const GameManager: React.FunctionComponent = () => {
   //Init websocket
   useEffect(() => {
     socketManager.connect();
+
+    const onLobbyState: Listener<
+      ServerPayloads[ServerEvents.LobbyState]
+    > = async (data) => {
+      setLobbyState(data);
+
+      router.query.lobby = data.lobbyId;
+
+      await router.push(
+        {
+          pathname: '/',
+          query: { ...router.query },
+        },
+        undefined,
+        {},
+      );
+    };
 
     const onGameNotification: Listener<
       ServerPayloads[ServerEvents.GameNotification]
@@ -32,18 +50,20 @@ const GameManager: React.FunctionComponent = () => {
       ServerEvents.GameNotification,
       onGameNotification,
     );
+    socketManager.registerListener(ServerEvents.LobbyState, onLobbyState);
 
     return () => {
       socketManager.removeListener(
         ServerEvents.GameNotification,
         onGameNotification,
       );
+      socketManager.removeListener(ServerEvents.LobbyState, onLobbyState);
     };
-  }, []);
+  }, [router, setLobbyState, socketManager]);
 
   if (lobbyState === null) return <Introduction />;
 
-  return <></>;
+  return <Game />;
 };
 
 export default GameManager;
