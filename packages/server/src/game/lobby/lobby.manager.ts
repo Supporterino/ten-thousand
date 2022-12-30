@@ -47,6 +47,12 @@ class LobbyManager {
         'Lobby already full.',
       );
 
+    if (lobby.instance.hasStarted)
+      throw new ServerException(
+        SocketExceptions.LobbyError,
+        'Lobby already started.',
+      );
+
     lobby.addClient(client);
   }
 

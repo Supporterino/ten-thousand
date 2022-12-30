@@ -28,6 +28,9 @@ class Lobby {
     client.join(this.id);
     client.data.lobby = this;
 
+    if (this.clients.size === this.numberOfClients)
+      this.instance.triggerStart();
+
     this.dispatchLobbyState();
   }
 
@@ -52,6 +55,10 @@ class Lobby {
       mode: this.numberOfClients === 1 ? 'solo' : 'multi',
       numberOfPlayers: this.numberOfClients,
       clientNames: Array.from(this.clientNames),
+      scoreboard: Array.from(this.instance.scoreboard),
+      running: this.instance.hasStarted && !this.instance.hasFinished,
+      finished: this.instance.hasFinished,
+      activePlayer: this.instance.activePlayer,
     };
 
     this.dispatchToLobby(ServerEvents.LobbyState, payload);
