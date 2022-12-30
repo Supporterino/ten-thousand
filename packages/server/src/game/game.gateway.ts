@@ -54,6 +54,7 @@ export class GameGateway
 
   @SubscribeMessage(ClientEvents.LobbyCreate)
   onLobbyCreate(client: AuthenticatedSocket, data: LobbyCreateDto) {
+    this.logger.debug('Creating lobby with DTO: ', data);
     const lobby = this.lobbyManager.createLobby(
       data.mode,
       data.numberOfPlayers,
