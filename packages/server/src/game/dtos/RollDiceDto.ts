@@ -3,6 +3,7 @@ import {
   ArrayMinSize,
   ArrayNotEmpty,
   IsArray,
+  IsBoolean,
   IsOptional,
   IsString,
   IsUUID,
@@ -19,4 +20,7 @@ export class RollDiceDto {
   @ArrayMaxSize(6)
   @IsOptional()
   toSafe?: Array<number>;
+
+  @IsBoolean()
+  endRound: boolean;
 }

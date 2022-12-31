@@ -3,6 +3,7 @@ import { ServerPayloads } from '@app/../../shared/server/ServerPayloads';
 import Lobby from '../lobby/lobby';
 import { Socket } from 'socket.io';
 import { RollOptions, RollState } from './rollState';
+import { Logger } from '@nestjs/common';
 
 class Instance {
   public hasStarted = false;
@@ -15,6 +16,8 @@ class Instance {
   public activePlayer: Socket['id'];
   public currentRoll: RollState;
   public activeDice: Array<number>;
+
+  private readonly logger: Logger = new Logger(Instance.name);
 
   constructor(private readonly lobby: Lobby) {}
 
@@ -40,10 +43,19 @@ class Instance {
     );
   }
 
+  private nextRound() {
+    this.logger.log(
+      `Starting new round with active player: ${this.activePlayer}`,
+    );
+  }
+
   public rollDice(options: RollOptions) {
     if (!this.currentRoll) this.currentRoll = new RollState();
 
-    this.currentRoll.nextRoll(options);
+    if (!this.currentRoll.nextRoll(options)) {
+      this.nextRound();
+      return;
+    }
 
     this.lobby.dispatchToLobby<ServerPayloads[ServerEvents.DiceRoll]>(
       ServerEvents.DiceRoll,

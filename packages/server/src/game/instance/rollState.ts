@@ -14,14 +14,18 @@ class RollState {
     this.score = 0;
   }
 
-  nextRoll({ toSafe }: RollOptions) {
+  nextRoll({ toSafe, endRound }: RollOptions): boolean {
     if (toSafe) {
       this.calculateScore(toSafe);
     }
 
+    if (endRound) return false;
+
     this.activeDice = Array.from({ length: this.remainingDice }, () =>
       Math.ceil(Math.random() * 6),
     );
+
+    return true;
   }
 
   private calculateScore(dices: Array<number>) {
@@ -37,6 +41,7 @@ class RollState {
 
 type RollOptions = {
   toSafe?: Array<number>;
+  endRound: boolean;
 };
 
 export { RollState, RollOptions };

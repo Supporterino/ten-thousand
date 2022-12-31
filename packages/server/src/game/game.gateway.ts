@@ -95,6 +95,9 @@ export class GameGateway
   @SubscribeMessage(ClientEvents.RollDice)
   onRollDice(client: AuthenticatedSocket, data: RollDiceDto) {
     const lobby = this.lobbyManager.getLobbyByID(data.lobbyId);
-    lobby.instance.rollDice({ toSafe: data.toSafe ?? undefined });
+    lobby.instance.rollDice({
+      toSafe: data.toSafe ?? undefined,
+      endRound: data.endRound,
+    });
   }
 }
