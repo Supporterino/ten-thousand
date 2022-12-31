@@ -2,6 +2,7 @@ import { ServerEvents } from '@app/../../shared/server/ServerEvents';
 import { ServerPayloads } from '@app/../../shared/server/ServerPayloads';
 import Lobby from '../lobby/lobby';
 import { Socket } from 'socket.io';
+import { RollOptions, RollState } from './rollState';
 
 class Instance {
   public hasStarted = false;
@@ -12,6 +13,7 @@ class Instance {
   >();
 
   public activePlayer: Socket['id'];
+  public currentRoll: RollState;
   public activeDice: Array<number>;
 
   constructor(private readonly lobby: Lobby) {}
@@ -27,7 +29,7 @@ class Instance {
       this.scoreboard.set(client.id, ['0']);
     });
 
-    this.activePlayer = this.lobby.clients.keys()[0];
+    this.activePlayer = [...this.lobby.clients.keys()][0];
 
     this.lobby.dispatchToLobby<ServerPayloads[ServerEvents.GameNotification]>(
       ServerEvents.GameNotification,
@@ -38,16 +40,17 @@ class Instance {
     );
   }
 
-  public rollDice(firstRoll = true) {
-    this.activeDice = Array.from({ length: 6 }, () =>
-      Math.floor(Math.random() * 7),
-    );
+  public rollDice(options: RollOptions) {
+    if (!this.currentRoll) this.currentRoll = new RollState();
+
+    this.currentRoll.nextRoll(options);
 
     this.lobby.dispatchToLobby<ServerPayloads[ServerEvents.DiceRoll]>(
       ServerEvents.DiceRoll,
       {
-        firstRoll: firstRoll,
-        newDice: this.activeDice,
+        firstRoll: this.currentRoll.rollCount === 0,
+        lastDice: this.currentRoll.safedDice,
+        newDice: this.currentRoll.activeDice,
       },
     );
   }

@@ -17,6 +17,7 @@ import { Server, Socket } from 'socket.io';
 import { LobbyJoinDto } from './dtos/LobbyJoinDto';
 import { LobbyCreateDto } from './dtos/LobbyCreateDto';
 import { ChangeNameDto } from './dtos/ChangeNameDto';
+import { RollDiceDto } from './dtos/RollDiceDto';
 
 @UsePipes(new WsValidationPipe())
 @WebSocketGateway()
@@ -89,5 +90,11 @@ export class GameGateway
   onNameChange(client: AuthenticatedSocket, data: ChangeNameDto) {
     const lobby = this.lobbyManager.getLobbyByID(data.lobbyId);
     lobby.changeName(client, data.name);
+  }
+
+  @SubscribeMessage(ClientEvents.RollDice)
+  onRollDice(client: AuthenticatedSocket, data: RollDiceDto) {
+    const lobby = this.lobbyManager.getLobbyByID(data.lobbyId);
+    lobby.instance.rollDice({ toSafe: data.toSafe ?? undefined });
   }
 }
