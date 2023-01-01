@@ -1,9 +1,7 @@
 import useSocketManager from '@hooks/useSocketManager';
-import { Button, Flex, Text } from '@mantine/core';
-import { ClientEvents } from '@the-ten-thousand/shared/client/ClientEvents';
-import { useEffect, useState } from 'react';
+import { Flex } from '@mantine/core';
 import { useRecoilValue } from 'recoil';
-import { Socket } from 'socket.io-client';
+import DiceField from './DiceField';
 import GameHeader from './GameHeader';
 import { CurrentLobbyState } from './State';
 
@@ -16,8 +14,7 @@ const Game: React.FunctionComponent = () => {
   return (
     <Flex gap={'md'} justify="center" direction="column" wrap="wrap" w={'100%'}>
       <GameHeader />
-      <Text>My id: {clientId}</Text>
-      <Text>Lobby ID: {currentLobbyState.lobbyId}</Text>
+      <DiceField />
     </Flex>
   );
 };
