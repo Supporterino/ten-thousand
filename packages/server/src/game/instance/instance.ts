@@ -61,8 +61,9 @@ class Instance {
       ServerEvents.DiceRoll,
       {
         firstRoll: this.currentRoll.rollCount === 0,
-        lastDice: this.currentRoll.safedDice,
-        newDice: this.currentRoll.activeDice,
+        safedDice: this.currentRoll.safedDice,
+        activeDice: this.currentRoll.activeDice,
+        score: this.currentRoll.score,
       },
     );
   }

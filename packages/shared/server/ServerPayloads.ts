@@ -24,8 +24,9 @@ type ServerPayloads = {
 
   [ServerEvents.DiceRoll]: {
     firstRoll: boolean;
-    lastDice?: Array<number>;
-    newDice: Array<number>;
+    safedDice?: Array<number>;
+    activeDice: Array<number>;
+    score: number;
   };
 };
 
