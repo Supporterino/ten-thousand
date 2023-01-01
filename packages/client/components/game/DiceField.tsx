@@ -3,6 +3,10 @@ import useSocketManager from '@hooks/useSocketManager';
 import { Button, Flex, Group, Text } from '@mantine/core';
 import { ClientEvents } from '@the-ten-thousand/shared/client/ClientEvents';
 import { ServerEvents } from '@the-ten-thousand/shared/server/ServerEvents';
+import {
+  isValidScoringSet,
+  calculateScore,
+} from '@the-ten-thousand/shared/server/DiceSetValidation';
 import { ServerPayloads } from '@the-ten-thousand/shared/server/ServerPayloads';
 import { useState, useEffect } from 'react';
 import { useRecoilValue } from 'recoil';
@@ -17,8 +21,10 @@ const DiceField: React.FunctionComponent = () => {
   const [toSafeDice, setToSafeDice] = useState<Array<number>>([]);
   const [safedDice, setSafedDice] = useState<Array<number>>();
   const [score, setScore] = useState<number>();
+  const [estimatedScore, setEstimatedScore] = useState<number>();
   const [firstRoll, setFirstRoll] = useState<boolean>();
   const [globalDisable, setGlobalDisable] = useState<boolean>(true);
+  const [isNotValid, setIsNotValid] = useState<boolean>(false);
 
   const roll = (endRound: boolean = false) => {
     socketManager.emit({
@@ -34,6 +40,16 @@ const DiceField: React.FunctionComponent = () => {
   useEffect(() => {
     setGlobalDisable(currentLobbyState.activePlayer !== clientId);
   }, [clientId, currentLobbyState.activePlayer]);
+
+  useEffect(() => {
+    console.log(isValidScoringSet(toSafeDice));
+    if (toSafeDice.length > 0) setIsNotValid(!isValidScoringSet(toSafeDice));
+    else setIsNotValid(false);
+  }, [toSafeDice]);
+
+  useEffect(() => {
+    if (!isNotValid) setEstimatedScore(calculateScore(toSafeDice));
+  }, [isNotValid, toSafeDice]);
 
   useEffect(() => {
     const onDiceRoll: Listener<ServerPayloads[ServerEvents.DiceRoll]> = ({
@@ -71,7 +87,7 @@ const DiceField: React.FunctionComponent = () => {
 
   return (
     <Flex gap={'md'} justify="center" direction="column" wrap="wrap" w={'100%'}>
-      {score && <Text>Estimated score: {score}</Text>}
+      {estimatedScore && <Text>Estimated score: {estimatedScore}</Text>}
       {safedDice && (
         <>
           <Text>Last Roll</Text>
@@ -132,7 +148,7 @@ const DiceField: React.FunctionComponent = () => {
       </Flex>
       <Group>
         <Button
-          disabled={globalDisable}
+          disabled={globalDisable || isNotValid}
           onClick={() => {
             roll(true);
           }}
@@ -140,7 +156,7 @@ const DiceField: React.FunctionComponent = () => {
           End round
         </Button>
         <Button
-          disabled={globalDisable}
+          disabled={globalDisable || isNotValid}
           onClick={() => {
             roll();
           }}
