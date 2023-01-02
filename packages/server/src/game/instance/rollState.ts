@@ -1,4 +1,8 @@
-import { SocketExceptions } from '@app/../../shared/server/SocketExceptions';
+import { SocketExceptions } from '@shared/server/SocketExceptions';
+import {
+  isValidScoringSet,
+  calculateScore,
+} from '@shared/server/DiceSetValidation';
 import { ServerException } from '../server.exception';
 
 class RollState {
@@ -7,6 +11,7 @@ class RollState {
   public activeDice: Array<number>;
   public remainingDice: number;
   public rollCount: number;
+  public scoredThisRoll: boolean;
 
   constructor() {
     this.rollCount = 0;
@@ -17,6 +22,9 @@ class RollState {
   nextRoll({ toSafe, endRound }: RollOptions): boolean {
     if (toSafe) {
       this.calculateScore(toSafe);
+      this.remainingDice = this.remainingDice - toSafe.length;
+      if (this.remainingDice === 0) this.remainingDice = 6;
+      this.scoredThisRoll = true;
     }
 
     if (endRound) return false;
@@ -35,7 +43,13 @@ class RollState {
         'Dice to save not included in last dice roll',
       );
 
-    // TODO: Implement score calculation
+    if (!isValidScoringSet(dices))
+      throw new ServerException(
+        SocketExceptions.RollMismatch,
+        `Dice to save aren' valid`,
+      );
+
+    this.score += calculateScore(dices);
   }
 }
 

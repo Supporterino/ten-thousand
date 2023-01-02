@@ -4,6 +4,7 @@ import { AuthenticatedSocket } from '@app/game/types';
 import { ServerEvents } from '@shared/server/ServerEvents';
 import { Instance } from '@app/game/instance/instance';
 import { ServerPayloads } from '@app/../../shared/server/ServerPayloads';
+import { mapToJSON } from '@app/../../shared/server/ParseFunctions';
 
 class Lobby {
   public readonly id: string = v4();
@@ -55,7 +56,7 @@ class Lobby {
       mode: this.numberOfClients === 1 ? 'solo' : 'multi',
       numberOfPlayers: this.numberOfClients,
       clientNames: Array.from(this.clientNames),
-      scoreboard: Array.from(this.instance.scoreboard),
+      scoreboard: mapToJSON(this.instance.scoreboard),
       running: this.instance.hasStarted && !this.instance.hasFinished,
       finished: this.instance.hasFinished,
       activePlayer: this.instance.activePlayer,
