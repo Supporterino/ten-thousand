@@ -22,7 +22,7 @@ const DiceField: React.FunctionComponent = () => {
   const [safedDice, setSafedDice] = useState<Array<number>>();
   const [score, setScore] = useState<number>();
   const [estimatedScore, setEstimatedScore] = useState<number>();
-  const [firstRoll, setFirstRoll] = useState<boolean>();
+  const [firstRoll, setFirstRoll] = useState<boolean>(true);
   const [globalDisable, setGlobalDisable] = useState<boolean>(true);
   const [isNotValid, setIsNotValid] = useState<boolean>(false);
 
@@ -35,6 +35,7 @@ const DiceField: React.FunctionComponent = () => {
         ...(toSafeDice.length > 0 && { toSafe: toSafeDice }),
       },
     });
+    setToSafeDice([]);
   };
 
   useEffect(() => {
@@ -64,10 +65,23 @@ const DiceField: React.FunctionComponent = () => {
       setFirstRoll(firstRoll);
     };
 
+    const onRoundEnd: Listener<ServerPayloads[ServerEvents.NewRound]> = () => {
+      setRolledDice(undefined);
+      setToSafeDice([]);
+      setSafedDice(undefined);
+      setScore(undefined);
+      setEstimatedScore(undefined);
+      setFirstRoll(true);
+      setGlobalDisable(true);
+      setIsNotValid(false);
+    };
+
     socketManager.registerListener(ServerEvents.DiceRoll, onDiceRoll);
+    socketManager.registerListener(ServerEvents.NewRound, onRoundEnd);
 
     return () => {
       socketManager.removeListener(ServerEvents.DiceRoll, onDiceRoll);
+      socketManager.removeListener(ServerEvents.NewRound, onRoundEnd);
     };
   }, []);
 
@@ -87,7 +101,7 @@ const DiceField: React.FunctionComponent = () => {
 
   return (
     <Flex gap={'md'} justify="center" direction="column" wrap="wrap" w={'100%'}>
-      {estimatedScore && <Text>Estimated score: {estimatedScore}</Text>}
+      {score && <Text>Round score: {score}</Text>}
       {safedDice && (
         <>
           <Text>Last Roll</Text>
@@ -146,6 +160,7 @@ const DiceField: React.FunctionComponent = () => {
           </Button>
         ))}
       </Flex>
+      <Text>Estimated Score: {estimatedScore}</Text>
       <Group>
         <Button
           disabled={globalDisable || isNotValid}
@@ -156,7 +171,11 @@ const DiceField: React.FunctionComponent = () => {
           End round
         </Button>
         <Button
-          disabled={globalDisable || isNotValid}
+          disabled={
+            globalDisable ||
+            isNotValid ||
+            (toSafeDice.length === 0 && !firstRoll)
+          }
           onClick={() => {
             roll();
           }}
