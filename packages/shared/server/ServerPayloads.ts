@@ -16,7 +16,7 @@ type ServerPayloads = {
     mode: 'solo' | 'multi';
     numberOfPlayers: number;
     clientNames: Array<[string, string]>;
-    scoreboard: Array<[string, Array<string>]>;
+    scoreboard: string;
     running: boolean;
     finished: boolean;
     activePlayer: Socket['id'];
@@ -28,6 +28,8 @@ type ServerPayloads = {
     activeDice: Array<number>;
     score: number;
   };
+
+  [ServerEvents.NewRound]: {};
 };
 
 export { ServerPayloads };
