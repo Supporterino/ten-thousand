@@ -23,6 +23,7 @@ const GameManager: React.FunctionComponent = () => {
       ServerPayloads[ServerEvents.LobbyState]
     > = async (data) => {
       setLobbyState(data);
+      console.log(lobbyState);
 
       router.query.lobby = data.lobbyId;
 

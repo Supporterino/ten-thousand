@@ -12,10 +12,16 @@ import { ClientEvents } from '@the-ten-thousand/shared/client/ClientEvents';
 import { useState, useEffect } from 'react';
 import { useRecoilValue } from 'recoil';
 import { Socket } from 'socket.io-client';
-import { Edit } from 'tabler-icons-react';
+import { Edit, ClipboardList } from 'tabler-icons-react';
 import { CurrentLobbyState } from './State';
 
-const GameHeader: React.FunctionComponent = () => {
+type GameHeaderProps = {
+  openScoreboard: () => void;
+};
+
+const GameHeader: React.FunctionComponent<GameHeaderProps> = ({
+  openScoreboard,
+}: GameHeaderProps) => {
   const { socketManager } = useSocketManager();
   const currentLobbyState = useRecoilValue(CurrentLobbyState)!;
   const clientId = socketManager.getSocketId()!;
@@ -49,6 +55,9 @@ const GameHeader: React.FunctionComponent = () => {
         direction="row"
         wrap="nowrap"
       >
+        <ActionIcon mr={'auto'} onClick={openScoreboard} variant="filled">
+          <ClipboardList />
+        </ActionIcon>
         <Text>
           {clientNames?.get(clientId) ? clientNames?.get(clientId) : clientId}
         </Text>
