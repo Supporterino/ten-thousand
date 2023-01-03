@@ -4,6 +4,7 @@ import { useRecoilValue } from 'recoil';
 import { CurrentLobbyState } from './State';
 import { JSONtoMap } from '@the-ten-thousand/shared/server/ParseFunctions';
 import { Socket } from 'socket.io-client';
+import useClientNames from '@hooks/useClientNames';
 
 type ScoreboardProps = {
   open: boolean;
@@ -22,11 +23,13 @@ const Scoreboard: React.FunctionComponent<ScoreboardProps> = ({
   open,
   close,
 }: ScoreboardProps) => {
-  const currentLobbyState = useRecoilValue(CurrentLobbyState)!;
+  const currentLobbyState = useRecoilValue(CurrentLobbyState);
   const [rows, setRows] = useState<Array<Array<string>>>();
-  const [players, setPlayers] = useState<Array<string>>();
+  const [players, setPlayers] = useState<Array<string>>([]);
+  const clientNames = useClientNames();
 
   useEffect(() => {
+    if (!currentLobbyState) return;
     const scoreboard: Map<string, ScoreEntry> = JSONtoMap(
       currentLobbyState.scoreboard,
     );
@@ -37,6 +40,7 @@ const Scoreboard: React.FunctionComponent<ScoreboardProps> = ({
     scoreboard.forEach((scoreEntry: ScoreEntry, clientId: string) => {
       scoreEntry.pastScores.forEach((score: string, index: number) => {
         let row;
+
         if (newRows.has(index)) row = newRows.get(index);
         else row = new Array<string>(players!.length);
 
@@ -44,13 +48,22 @@ const Scoreboard: React.FunctionComponent<ScoreboardProps> = ({
 
         newRows.set(index, row!);
       });
+
+      let finalRow;
+      const finalIndex = scoreEntry.pastScores.length;
+      if (newRows.has(finalIndex)) finalRow = newRows.get(finalIndex);
+      else finalRow = new Array<string>(players!.length);
+
+      finalRow![players!.indexOf(clientId)] = scoreEntry.score;
+
+      newRows.set(finalIndex, finalRow!);
     });
     setRows([...newRows.values()]);
 
     console.log(newRows);
     console.log(players);
     console.log(rows);
-  }, [currentLobbyState]);
+  }, [currentLobbyState?.scoreboard]);
 
   return (
     <Dialog opened={open} withCloseButton onClose={() => close()} radius="md">
@@ -58,19 +71,23 @@ const Scoreboard: React.FunctionComponent<ScoreboardProps> = ({
       <Table>
         <thead>
           <tr>
-            {players?.map((player) => (
-              <th key={`header-${player}`}>{player}</th>
-            ))}
+            {players &&
+              players.map((player) => (
+                <th key={`header-${player}`}>
+                  {clientNames?.get(player) ? clientNames?.get(player) : player}
+                </th>
+              ))}
           </tr>
         </thead>
         <tbody>
-          {rows?.map((entryArr, index) => (
-            <tr key={`row-${index}`}>
-              {entryArr.map((entry, innerIndex) => (
-                <td key={`row-${index}-data-${innerIndex}`}>{entry}</td>
-              ))}
-            </tr>
-          ))}
+          {rows &&
+            rows.map((entryArr, index) => (
+              <tr key={`row-${index}`}>
+                {entryArr.map((entry, innerIndex) => (
+                  <td key={`row-${index}-data-${innerIndex}`}>{entry}</td>
+                ))}
+              </tr>
+            ))}
         </tbody>
       </Table>
     </Dialog>

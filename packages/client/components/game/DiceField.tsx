@@ -1,6 +1,6 @@
 import { Listener } from '@components/websocket/types';
 import useSocketManager from '@hooks/useSocketManager';
-import { Button, Flex, Group, Text } from '@mantine/core';
+import { Box, Button, Flex, Group, Text } from '@mantine/core';
 import { ClientEvents } from '@the-ten-thousand/shared/client/ClientEvents';
 import { ServerEvents } from '@the-ten-thousand/shared/server/ServerEvents';
 import {
@@ -11,6 +11,8 @@ import { ServerPayloads } from '@the-ten-thousand/shared/server/ServerPayloads';
 import { useState, useEffect } from 'react';
 import { useRecoilValue } from 'recoil';
 import { CurrentLobbyState } from './State';
+import DiceView from '@components/ui/DiceViewComponent';
+import { showNotification } from '@mantine/notifications';
 
 const DiceField: React.FunctionComponent = () => {
   const { socketManager } = useSocketManager();
@@ -27,15 +29,27 @@ const DiceField: React.FunctionComponent = () => {
   const [isNotValid, setIsNotValid] = useState<boolean>(false);
 
   const roll = (endRound: boolean = false) => {
-    socketManager.emit({
-      event: ClientEvents.RollDice,
-      data: {
-        lobbyId: currentLobbyState.lobbyId,
-        endRound: endRound,
-        ...(toSafeDice.length > 0 && { toSafe: toSafeDice }),
-      },
-    });
-    setToSafeDice([]);
+    if (
+      endRound &&
+      (safedDice || toSafeDice.length > 0) &&
+      (estimatedScore ? estimatedScore : 0) + (score ? score : 0) < 350
+    ) {
+      showNotification({
+        message: `You don't reach the required score of 350`,
+        color: 'orange',
+        autoClose: 3000,
+      });
+    } else {
+      socketManager.emit({
+        event: ClientEvents.RollDice,
+        data: {
+          lobbyId: currentLobbyState.lobbyId,
+          endRound: endRound,
+          ...(toSafeDice.length > 0 && { toSafe: toSafeDice }),
+        },
+      });
+      setToSafeDice([]);
+    }
   };
 
   useEffect(() => {
@@ -100,70 +114,48 @@ const DiceField: React.FunctionComponent = () => {
   };
 
   return (
-    <Flex gap={'md'} justify="center" direction="column" wrap="wrap" w={'100%'}>
-      {score && <Text>Round score: {score}</Text>}
-      {safedDice && (
-        <>
-          <Text>Last Roll</Text>
-          <Flex
-            gap="md"
-            justify="center"
-            align="center"
-            direction="row"
-            wrap="wrap"
-          >
-            {safedDice.map((die: number, index: number) => (
-              <Button disabled key={`safedDice-${index}`}>
-                {die}
-              </Button>
-            ))}
-          </Flex>
-        </>
-      )}
-      {toSafeDice.length > 0 && (
-        <>
-          <Text>Dice to keep</Text>
-          <Flex
-            gap="md"
-            justify="center"
-            align="center"
-            direction="row"
-            wrap="wrap"
-          >
-            {toSafeDice.map((die: number, index: number) => (
-              <Button
-                disabled={globalDisable}
-                key={`toSafeDice-${index}`}
-                onClick={() => unsafeDie(index)}
-              >
-                {die}
-              </Button>
-            ))}
-          </Flex>
-        </>
-      )}
-      {rolledDice && <Text>Rolled Dice</Text>}
-      <Flex
-        gap="md"
-        justify="center"
-        align="center"
-        direction="row"
-        wrap="wrap"
-      >
-        {rolledDice?.map((die: number, index: number) => (
-          <Button
-            key={`rolledDice-${index}`}
-            onClick={() => safeDie(index)}
+    <Flex
+      gap={'md'}
+      justify="center"
+      direction="column"
+      wrap="wrap"
+      w={'100%'}
+      sx={{ flexGrow: 1 }}
+      pb={'lg'}
+    >
+      <Box sx={{ flexGrow: 1 }}>
+        {score && <Text>Round score: {score}</Text>}
+        {safedDice && (
+          <DiceView name={'Last roll'} dice={safedDice} disabled divider />
+        )}
+        {toSafeDice.length > 0 && (
+          <DiceView
+            name={'Scoring dice'}
+            dice={toSafeDice}
             disabled={globalDisable}
-          >
-            {die}
-          </Button>
-        ))}
-      </Flex>
-      <Text>Estimated Score: {estimatedScore}</Text>
+            onInteraction={unsafeDie}
+            divider
+          />
+        )}
+        {rolledDice && (
+          <DiceView
+            name={'Rolled dice'}
+            dice={rolledDice}
+            disabled={globalDisable}
+            onInteraction={safeDie}
+          />
+        )}
+      </Box>
       <Group>
+        <Text>Estimated Score: {estimatedScore}</Text>
+        {estimatedScore && score && (
+          <Text ml={'auto'}>Final Score: {estimatedScore! + score!}</Text>
+        )}
+      </Group>
+      <Group position="center">
         <Button
-          disabled={globalDisable || isNotValid}
+          w={'40%'}
+          disabled={globalDisable || isNotValid || rolledDice?.length === 0}
           onClick={() => {
             roll(true);
           }}
@@ -171,6 +163,7 @@ const DiceField: React.FunctionComponent = () => {
           End round
         </Button>
         <Button
+          w={'40%'}
           disabled={
             globalDisable ||
             isNotValid ||

@@ -18,10 +18,11 @@ const Game: React.FunctionComponent = () => {
       <Scoreboard open={open} close={() => setOpen(false)} />
       <Flex
         gap={'md'}
-        justify="center"
+        align="center"
         direction="column"
         wrap="wrap"
         w={'100%'}
+        h={'100%'}
       >
         <GameHeader openScoreboard={() => setOpen(true)} />
         <DiceField />

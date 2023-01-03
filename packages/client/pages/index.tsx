@@ -5,8 +5,7 @@ import { NextPage } from 'next';
 
 const Page: NextPage = () => {
   return (
-    <Container>
-      <Header />
+    <Container h={'100vh'}>
       <GameManager />
     </Container>
   );

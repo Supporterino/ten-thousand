@@ -28,7 +28,7 @@ export default function App(props: AppProps) {
             colorScheme: 'dark',
           }}
         >
-          <NotificationsProvider position="bottom-center" limit={15}>
+          <NotificationsProvider position="top-center" limit={15}>
             <SocketManagerProvider>
               <Component {...pageProps} />
             </SocketManagerProvider>

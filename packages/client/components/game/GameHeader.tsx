@@ -1,3 +1,4 @@
+import useClientNames from '@hooks/useClientNames';
 import useSocketManager from '@hooks/useSocketManager';
 import {
   ActionIcon,
@@ -9,9 +10,8 @@ import {
   TextInput,
 } from '@mantine/core';
 import { ClientEvents } from '@the-ten-thousand/shared/client/ClientEvents';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRecoilValue } from 'recoil';
-import { Socket } from 'socket.io-client';
 import { Edit, ClipboardList } from 'tabler-icons-react';
 import { CurrentLobbyState } from './State';
 
@@ -25,14 +25,10 @@ const GameHeader: React.FunctionComponent<GameHeaderProps> = ({
   const { socketManager } = useSocketManager();
   const currentLobbyState = useRecoilValue(CurrentLobbyState)!;
   const clientId = socketManager.getSocketId()!;
+  const clientNames = useClientNames();
 
-  const [clientNames, setClientNames] = useState<Map<Socket['id'], string>>();
   const [opened, setOpened] = useState(false);
   const [newName, setNewName] = useState<string>();
-
-  useEffect(() => {
-    setClientNames(new Map(currentLobbyState.clientNames));
-  }, [currentLobbyState.clientNames]);
 
   const setUserName = (name: string) => {
     socketManager.emit({
@@ -50,19 +46,21 @@ const GameHeader: React.FunctionComponent<GameHeaderProps> = ({
         mih={50}
         bg="rgba(0, 0, 0, .3)"
         gap="md"
-        justify="flex-end"
+        justify="flex-start"
         align="center"
         direction="row"
         wrap="nowrap"
+        px={'sm'}
+        w={'100%'}
       >
-        <ActionIcon mr={'auto'} onClick={openScoreboard} variant="filled">
-          <ClipboardList />
-        </ActionIcon>
         <Text>
           {clientNames?.get(clientId) ? clientNames?.get(clientId) : clientId}
         </Text>
         <ActionIcon onClick={() => setOpened((o) => !o)} variant="filled">
           <Edit />
+        </ActionIcon>
+        <ActionIcon ml={'auto'} onClick={openScoreboard} variant="filled">
+          <ClipboardList />
         </ActionIcon>
       </Flex>
       <Dialog
