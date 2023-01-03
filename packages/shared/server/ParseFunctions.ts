@@ -6,7 +6,7 @@ const JSONtoMap = (json: string): Map<any, any> => {
   return JSON.parse(json, reviver);
 };
 
-const replacer = (key, value) => {
+const replacer = (_key: string, value: any) => {
   if (value instanceof Map) {
     return {
       dataType: 'Map',
@@ -17,7 +17,7 @@ const replacer = (key, value) => {
   }
 };
 
-const reviver = (key, value) => {
+const reviver = (_key: string, value: any) => {
   if (typeof value === 'object' && value !== null) {
     if (value.dataType === 'Map') {
       return new Map(value.value);

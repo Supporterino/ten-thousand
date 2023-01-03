@@ -32,4 +32,4 @@ type ServerPayloads = {
   [ServerEvents.NewRound]: {};
 };
 
-export { ServerPayloads };
+export type { ServerPayloads };
