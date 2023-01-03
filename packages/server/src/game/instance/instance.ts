@@ -14,6 +14,7 @@ class Instance {
     Socket['id'],
     ScoreState
   >();
+  private finalRound = false;
 
   public activePlayer: Socket['id'];
   public currentRoll: RollState;
@@ -74,6 +75,17 @@ class Instance {
       },
     );
 
+    if (+scoreState.score >= 10000) {
+      this.lobby.dispatchToLobby<ServerPayloads[ServerEvents.GameNotification]>(
+        ServerEvents.GameNotification,
+        {
+          color: 'blue',
+          message: `A score above 10000 was hit. Final rolls began`,
+        },
+      );
+      this.finalRound = true;
+    }
+
     this.lobby.dispatchToLobby<ServerPayloads[ServerEvents.NewRound]>(
       ServerEvents.NewRound,
       {},
@@ -83,6 +95,14 @@ class Instance {
       this.players[
         (this.players.indexOf(this.activePlayer) + 1) % this.players.length
       ];
+
+    if (
+      this.finalRound &&
+      (this.players.indexOf(this.activePlayer) + 1) % this.players.length === 0
+    ) {
+      this.triggerFinish();
+      this.activePlayer = undefined;
+    }
 
     this.logger.log(
       `Starting new round with active player: ${this.activePlayer}`,
@@ -127,7 +147,7 @@ class Instance {
       ServerEvents.GameNotification,
       {
         color: 'blue',
-        message: 'Game finished !',
+        message: 'Game finished!',
       },
     );
   }
