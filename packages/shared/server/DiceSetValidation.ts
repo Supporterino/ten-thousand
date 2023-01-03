@@ -1,8 +1,8 @@
 const isValidScoringSet = (arr: Array<number>) => {
   if (isStreet(arr)) return true;
   if (containsThreePairs(arr)) return true;
-  if (onlyContainsOneAndFive(arr)) return true;
   if (checkMuliple(arr)) return true;
+  if (onlyContainsOneAndFive(arr)) return true;
   return false;
 };
 
@@ -24,27 +24,12 @@ const isStreet = (arr: Array<number>): boolean => {
 };
 
 const checkMuliple = (arr: Array<number>): boolean => {
-  const stripped = stripOnesAndFives(arr);
-  const sorted = sortArray(stripped);
+  let isMultiple = false;
+  [0, 1, 2, 3, 4, 5, 6].forEach((toCheck) => {
+    if (arr.filter((item) => item === toCheck).length >= 3) isMultiple = true;
+  });
 
-  if (sorted.every((item) => item === sorted[0]) && sorted.length >= 3) return true;
-  if (sorted.length === 6) {
-    const { arr1: multipleOne, arr2: multipleTwo } = splitIntoMultiples(sorted);
-    if (multipleOne.every((item) => item === multipleOne[0]) && multipleTwo.every((item) => item === multipleTwo[0])) return true;
-  }
-  return false;
-};
-
-const splitIntoMultiples = (arr: Array<number>): { arr1: Array<number>; arr2: Array<number> } => {
-  const sorted = sortArray(arr);
-  return {
-    arr1: sorted.slice(0, 2),
-    arr2: sorted.slice(3, 5),
-  };
-};
-
-const stripOnesAndFives = (arr: Array<number>): Array<number> => {
-  return arr.filter((item) => item !== 1).filter((item) => item !== 5);
+  return isMultiple;
 };
 
 const calculateScore = (arr: Array<number>): number => {
@@ -52,19 +37,23 @@ const calculateScore = (arr: Array<number>): number => {
   if (arr.length === 6 && containsThreePairs(arr)) return SCORING_VALUES.THREE_PAIRS;
 
   if (checkMuliple(arr)) {
-    if (arr.length === 6) {
-      const { arr1: multipleOne, arr2: multipleTwo } = splitIntoMultiples(arr);
-      if (multipleOne[0] !== 1 && multipleTwo[0] !== 1) return (multipleOne[0] * 3 + multipleTwo[0] * 3) * SCORING_VALUES.MULTIPLE_BASE;
-      else
-        return 1000 + multipleOne[0] === 1
-          ? multipleTwo[0] * 3 * SCORING_VALUES.MULTIPLE_BASE
-          : multipleOne[0] * 3 * SCORING_VALUES.MULTIPLE_BASE;
-    } else {
-      let score = getOneAndFiveScore(arr);
-      const stripped = stripOnesAndFives(arr);
-      score += stripped[0] * stripped.length * SCORING_VALUES.MULTIPLE_BASE;
-      return score;
-    }
+    const numbers = {
+      1: arr.filter((item) => item === 1),
+      2: arr.filter((item) => item === 2),
+      3: arr.filter((item) => item === 3),
+      4: arr.filter((item) => item === 4),
+      5: arr.filter((item) => item === 5),
+      6: arr.filter((item) => item === 6),
+    };
+
+    return (
+      (numbers[1].length >= 3 ? 1000 * (numbers[1].length - 2) : numbers[1].length * 100) +
+      (numbers[2].length >= 3 ? SCORING_VALUES.MULTIPLE_BASE * 2 * (numbers[2].length - 2) : 0) +
+      (numbers[3].length >= 3 ? SCORING_VALUES.MULTIPLE_BASE * 3 * (numbers[3].length - 2) : 0) +
+      (numbers[4].length >= 3 ? SCORING_VALUES.MULTIPLE_BASE * 4 * (numbers[4].length - 2) : 0) +
+      (numbers[5].length >= 3 ? SCORING_VALUES.MULTIPLE_BASE * 5 * (numbers[5].length - 2) : numbers[5].length * 50) +
+      (numbers[6].length >= 3 ? SCORING_VALUES.MULTIPLE_BASE * 6 * (numbers[6].length - 2) : 0)
+    );
   }
 
   return getOneAndFiveScore(arr);
