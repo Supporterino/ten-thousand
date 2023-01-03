@@ -22,8 +22,12 @@ class RollState {
   nextRoll({ toSafe, endRound }: RollOptions): boolean {
     if (toSafe) {
       this.calculateScore(toSafe);
+      this.safedDice = this.safedDice ? this.safedDice.concat(toSafe) : toSafe;
       this.remainingDice = this.remainingDice - toSafe.length;
-      if (this.remainingDice === 0) this.remainingDice = 6;
+      if (this.remainingDice === 0) {
+        this.remainingDice = 6;
+        this.safedDice = undefined;
+      }
       this.scoredThisRoll = true;
     }
 

@@ -68,7 +68,9 @@ class Instance {
       ServerEvents.GameNotification,
       {
         color: 'blue',
-        message: `Round ended. Score was ${this.currentRoll.score} which increased total score to ${scoreState.score}`,
+        message: `Round ended. Score was ${
+          this.currentRoll.scoredThisRoll ? this.currentRoll.score : '-'
+        } which increased total score to ${scoreState.score}`,
       },
     );
 
