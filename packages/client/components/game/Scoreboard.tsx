@@ -1,5 +1,5 @@
-import { Dialog, Table, Text } from '@mantine/core';
-import { useEffect, useState } from 'react';
+import { Dialog, Modal, Table, Text } from '@mantine/core';
+import { Ref, useEffect, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import { CurrentLobbyState } from './State';
 import { JSONtoMap } from '@the-ten-thousand/shared/server/ParseFunctions';
@@ -66,7 +66,13 @@ const Scoreboard: React.FunctionComponent<ScoreboardProps> = ({
   }, [currentLobbyState?.scoreboard]);
 
   return (
-    <Dialog opened={open} withCloseButton onClose={() => close()} radius="md">
+    <Modal
+      opened={open}
+      withCloseButton
+      onClose={() => close()}
+      radius="md"
+      shadow={'sm'}
+    >
       <Text>Scoreboard</Text>
       <Table>
         <thead>
@@ -90,7 +96,7 @@ const Scoreboard: React.FunctionComponent<ScoreboardProps> = ({
             ))}
         </tbody>
       </Table>
-    </Dialog>
+    </Modal>
   );
 };
 

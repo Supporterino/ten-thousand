@@ -9,6 +9,7 @@ import { useRecoilState } from 'recoil';
 import Game from './Game';
 import Introduction from './Introduction';
 import { CurrentLobbyState } from './State';
+import Waiting from './Waiting';
 
 const GameManager: React.FunctionComponent = () => {
   const router = useRouter();
@@ -63,6 +64,8 @@ const GameManager: React.FunctionComponent = () => {
   }, [router, setLobbyState, socketManager]);
 
   if (lobbyState === null) return <Introduction />;
+
+  if (!lobbyState.running) return <Waiting />;
 
   return <Game />;
 };

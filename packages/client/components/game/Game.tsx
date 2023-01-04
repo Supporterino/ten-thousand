@@ -1,5 +1,6 @@
 import useSocketManager from '@hooks/useSocketManager';
 import { Flex } from '@mantine/core';
+import { useClickOutside } from '@mantine/hooks';
 import { useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import DiceField from './DiceField';

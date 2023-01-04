@@ -31,7 +31,8 @@ const DiceField: React.FunctionComponent = () => {
   const roll = (endRound: boolean = false) => {
     if (
       endRound &&
-      (safedDice || toSafeDice.length > 0) &&
+      safedDice &&
+      toSafeDice.length > 0 &&
       (estimatedScore ? estimatedScore : 0) + (score ? score : 0) < 350
     ) {
       showNotification({
@@ -156,6 +157,7 @@ const DiceField: React.FunctionComponent = () => {
         <Button
           w={'40%'}
           disabled={globalDisable || isNotValid || rolledDice?.length === 0}
+          variant="outline"
           onClick={() => {
             roll(true);
           }}
@@ -169,6 +171,7 @@ const DiceField: React.FunctionComponent = () => {
             isNotValid ||
             (toSafeDice.length === 0 && !firstRoll)
           }
+          variant="outline"
           onClick={() => {
             roll();
           }}

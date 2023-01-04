@@ -1,4 +1,5 @@
 import { Flex, Text, Button, Divider } from '@mantine/core';
+import getDice from './DiceHelper';
 
 type DiceViewProps = {
   name: string;
@@ -28,12 +29,13 @@ const DiceView: React.FunctionComponent<DiceViewProps> = ({
         {dice.map((die: number, index: number) => (
           <Button
             disabled={disabled}
+            p={0}
             onClick={() => {
               if (onInteraction) onInteraction(index);
             }}
             key={`diceview-${name}-${index}`}
           >
-            {die}
+            {getDice(die)}
           </Button>
         ))}
       </Flex>
