@@ -55,6 +55,7 @@ class Lobby {
       lobbyId: this.id,
       mode: this.numberOfClients === 1 ? 'solo' : 'multi',
       numberOfPlayers: this.numberOfClients,
+      onlinePlayers: this.clients.size,
       clientNames: Array.from(this.clientNames),
       scoreboard: mapToJSON(this.instance.scoreboard),
       running: this.instance.hasStarted && !this.instance.hasFinished,

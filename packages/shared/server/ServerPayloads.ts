@@ -15,6 +15,7 @@ type ServerPayloads = {
     lobbyId: string;
     mode: 'solo' | 'multi';
     numberOfPlayers: number;
+    onlinePlayers: number;
     clientNames: Array<[string, string]>;
     scoreboard: string;
     running: boolean;

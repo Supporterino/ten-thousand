@@ -12,7 +12,15 @@ const onlyContainsOneAndFive = (arr: Array<number>): boolean => {
 
 const containsThreePairs = (arr: Array<number>): boolean => {
   const sorted = sortArray(arr);
-  return sorted.length === 6 && sorted[0] === sorted[1] && sorted[2] === sorted[3] && sorted[4] === sorted[5];
+  return (
+    sorted.length === 6 &&
+    sorted[0] === sorted[1] &&
+    sorted[2] === sorted[3] &&
+    sorted[4] === sorted[5] &&
+    sorted[0] !== sorted[2] &&
+    sorted[0] !== sorted[4] &&
+    sorted[2] !== sorted[4]
+  );
 };
 
 const sortArray = (arr: Array<number>): Array<number> => {
