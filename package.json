@@ -16,6 +16,8 @@
     "start:dev:server": "yarn workspace @the-ten-thousand/server start:dev",
     "start:prod:client": "yarn workspace @the-ten-thousand/client start",
     "start:prod:server": "yarn workspace @the-ten-thousand/server start:prod",
+    "build:prod:client": "yarn workspace @the-ten-thousand/client start",
+    "build:prod:server": "yarn workspace @the-ten-thousand/server build",
     "start:dev": "run-p start:dev:client start:dev:server",
     "start:prod": "run-p start:prod:client start:prod:server"
   },

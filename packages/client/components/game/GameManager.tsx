@@ -65,7 +65,7 @@ const GameManager: React.FunctionComponent = () => {
 
   if (lobbyState === null) return <Introduction />;
 
-  if (!lobbyState.running) return <Waiting />;
+  if (!lobbyState.running && !lobbyState.finished) return <Waiting />;
 
   return <Game />;
 };
