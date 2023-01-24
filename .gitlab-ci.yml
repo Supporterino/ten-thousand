@@ -1,7 +1,7 @@
 image: docker:20.10.16
 
 variables:
-  DOCKER_HOST: tcp://docker:2375
+  DOCKER_HOST: tcp://docker:2376
   #
   # The 'docker' hostname is the alias of the service container as described at
   # https://docs.gitlab.com/ee/ci/services/#accessing-the-services.
@@ -25,6 +25,7 @@ services:
   - docker:20.10.16-dind
 
 before_script:
+  - ls /certs
   - docker info
 
 build:
