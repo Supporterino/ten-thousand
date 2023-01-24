@@ -1,5 +1,5 @@
 build:
-  stage: deply
+  stage: deploy
   script:
     - echo $DOCKER_PW | docker login --username supporterino --password-stdin
     - docker build -t supporterino/dice:latest .
