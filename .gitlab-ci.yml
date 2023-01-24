@@ -1,38 +1,10 @@
-image: docker:20.10.23
-
-variables:
-  DOCKER_HOST: tcp://docker:2375
-  #
-  # The 'docker' hostname is the alias of the service container as described at
-  # https://docs.gitlab.com/ee/ci/services/#accessing-the-services.
-  # If you're using GitLab Runner 12.7 or earlier with the Kubernetes executor and Kubernetes 1.6 or earlier,
-  # the variable must be set to tcp://localhost:2376 because of how the
-  # Kubernetes executor connects services to the job container
-  # DOCKER_HOST: tcp://localhost:2376
-  #
-  # Specify to Docker where to create the certificates. Docker
-  # creates them automatically on boot, and creates
-  # `/certs/client` to share between the service and job
-  # container, thanks to volume mount from config.toml
-  DOCKER_TLS_CERTDIR: ""
-  # These are usually specified by the entrypoint, however the
-  # Kubernetes executor doesn't run entrypoints
-  # https://gitlab.com/gitlab-org/gitlab-runner/-/issues/4125
-  DOCKER_TLS_VERIFY: 0
-  DOCKER_CERT_PATH: "$DOCKER_TLS_CERTDIR/client"
-
-services:
-  - docker:20.10.23-dind
-
-before_script:
-  - ls /certs
-  - ls /certs/client
-  - docker info
-
 build:
   stage: build
+  image:
+    name: gcr.io/kaniko-project/executor:v1.9.1-debug
+    entrypoint: [""]
   script:
-    - echo $DOCKER_PW | docker login --username supporterino --password-stdin
-    - docker build -t supporterino/dice:latest .
-    - docker build -t supporterino/dice:$CI_COMMIT_SHORT_SHA .
-    - docker push supporterino/dice
+    - /kaniko/executor
+      --context "${CI_PROJECT_DIR}"
+      --dockerfile "${CI_PROJECT_DIR}/Dockerfile"
+      --destination "supporterino/dice:${CI_COMMIT_SHORT_SHA}"
