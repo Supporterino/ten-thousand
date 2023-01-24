@@ -1,0 +1,7 @@
+build:
+  stage: deply
+  script:
+    - echo $DOCKER_PW | docker login --username supporterino --password-stdin
+    - docker build -t supporterino/dice:latest .
+    - docker build -t supporterino/dice:$CI_COMMIT_SHORT_SHA .
+    - docker push supporterino/dice
