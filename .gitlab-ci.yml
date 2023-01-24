@@ -26,6 +26,7 @@ services:
 
 before_script:
   - ls /certs
+  - ls /certs/client
   - docker info
 
 build:
